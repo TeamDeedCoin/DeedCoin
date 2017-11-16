@@ -1,5 +1,4 @@
-
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
 
 
 
@@ -93,10 +92,11 @@ contract Mortal is Ownable {
         }
     }
 }
-contract UserTokensControl is Ownable{
+contract UserTokensControl is Ownable{ 
+    uint256 Now = block.timestamp;
     uint256 isUserAbleToTransferTime = 1522541000000;//control for transfer time April 1 2018 00 : 03 :00
     modifier isUserAbleToTransferCheck() {
-        if(now < isUserAbleToTransferTime) 
+        if(Now < isUserAbleToTransferTime) 
         {
             _;
         }
@@ -139,9 +139,17 @@ contract BasicToken is ERC20Basic, UserTokensControl, Pausable {
   * @param _to The address to transfer to.
   * @param _value The amount to be transferred.
   */
+  
   function transfer(address _to, uint256 _value) public isUserAbleToTransferCheck returns (bool) {
+    uint256 april1st = 1522541000000;
     require(_to != address(0));
     require(_value <= balances[msg.sender]);
+    if (paused == true) {
+        if (now < april1st) {
+            revert();
+        }
+    }
+    // ADDED LINE <----------------------------------------------------
 
     // SafeMath.sub will throw if there is not enough balance.
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -149,6 +157,14 @@ contract BasicToken is ERC20Basic, UserTokensControl, Pausable {
     Transfer(msg.sender, _to, _value);
     return true;
   }
+
+  function burn() public onlyOwner returns (bool) {
+    uint remainingTokens = balanceOf(owner);
+    require(remainingTokens>0);
+    balances[owner] = 0;
+    return true;
+  }
+
 //   //One time distribute tokens
 //   function distributeTokensToFounder() public onlyOwner whenPaused returns (bool){
 //       assert(!isDistributeToFounders);
@@ -269,18 +285,18 @@ contract StandardToken is ERC20, BasicToken {
 
 
 contract DeedCoin is StandardToken {
-    string public constant name = "DeedCoin";
+    string public constant name = "DeedCoinTestO";
     uint public constant decimals = 18;
-    string public constant symbol = "DCN";
+    string public constant symbol = "DEEDTO";
 
     function DeedCoin()  public {
-      totalSupply=71500000 *(10**decimals);  // 
+      totalSupply=80000000 *(10**decimals);  // 
        owner = msg.sender;
-       companyReserve=0x5b162CeE49E4bf42E8B1145a9C3792CA2fB7EC43; //TODO change with deedcoin admin provided address
-       founderReserve=0x5b162CeE49E4bf42E8B1145a9C3792CA2fB7EC42;//TODO change with client address provided address
-       balances[msg.sender] = 50000000 * (10**decimals);
-       balances[companyReserve] = 10250000 * (10**decimals); //given by customer
-       balances[founderReserve] = 10250000 * (10**decimals);
+       companyReserve=0x4316E2A2160356f4848085242f47B0D889B4F901; //TODO change with deedcoin admin provided address
+       founderReserve=0xF605D265878BF8323268C45690A79e1e1D5e581B;//TODO change with client address provided address
+       balances[msg.sender] = 56000000 * (10**decimals);
+       balances[companyReserve] = 12000000 * (10**decimals); //given by customer
+       balances[founderReserve] = 12000000 * (10**decimals);
     }
 
     function() public {
