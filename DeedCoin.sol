@@ -146,7 +146,7 @@ contract BasicToken is ERC20Basic, UserTokensControl, Pausable {
     require(_value <= balances[msg.sender]);
     if (paused == true) {
       if (now < aug1st) {
-        if (msg.sender !== owner) {
+        if (msg.sender != owner) {
             revert();
         }
       }
