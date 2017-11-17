@@ -141,14 +141,18 @@ contract BasicToken is ERC20Basic, UserTokensControl, Pausable {
   */
   
   function transfer(address _to, uint256 _value) public isUserAbleToTransferCheck returns (bool) {
-    uint256 april1st = 1522541000000;
+    uint256 aug1st = 1533090000000;
     require(_to != address(0));
     require(_value <= balances[msg.sender]);
     if (paused == true) {
-        if (now < april1st) {
+      if (now < aug1st) {
+        if (msg.sender !== owner) {
             revert();
         }
+      }
     }
+
+
     // ADDED LINE <----------------------------------------------------
 
     // SafeMath.sub will throw if there is not enough balance.
