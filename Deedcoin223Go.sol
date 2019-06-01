@@ -4,7 +4,7 @@ contract Ownable {
 	address public owner;
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-   constructor() public {
+	constructor() public {
 		owner = msg.sender;
 	}
 
@@ -45,11 +45,6 @@ library SafeMath {
 	}
 }
 
-contract UserTokensControl is Ownable {
-	address companyReserve;
-	address founderReserve;
-}
-
 contract ERC223ReceivingContract {
 	function tokenFallback(address _from, uint256 _value, bytes memory _data) public pure {
 		_from;
@@ -67,7 +62,7 @@ contract ERC20 {
 	event Approval(address indexed _tokenOwner, address indexed _spender, uint _value);
 }
 
-contract StandardToken is ERC20, ERC223, UserTokensControl {
+contract StandardToken is ERC20, ERC223, Ownable {
 	uint256 public totalSupply;
 	using SafeMath for uint256;
 
@@ -166,13 +161,9 @@ contract Deedcoin is StandardToken {
 	string public constant symbol = "DEED";
 
 	constructor() public {
-		totalSupply = 10000000 *(10**decimals);
+		totalSupply = 7000000 * (10**decimals);
 		owner = msg.sender;
-		companyReserve = 0xbBE0805F7660aE0C4C7484dBee097398329eD5f2;
-		founderReserve = 0x63547A5423652ABaF323c5B4fae848C7686B28Bf;
 		balances[msg.sender] = 7000000 * (10**decimals);
-		balances[companyReserve] = 1500000 * (10**decimals); 
-		balances[founderReserve] = 1500000 * (10**decimals);
 	}
 
 	function() external {
